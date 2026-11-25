@@ -3,23 +3,23 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
-use App\Models\User;
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../app/Base/database.php';
 
 $app = AppFactory::create();
 
+$auth_endpoints = require __DIR__ . '/../app/Presentation/Routers/endpoints.php';
+
+$cors = require __DIR__ . '/../app/Base/cors.php';
+
+$cors($app);
+
 $app->get('/', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("Microservicio ms-auth en ejecuciónnnn");
+    $response->getBody()->write("Microservicio ms-auth en ejecución");
     return $response;
 });
 
-// Prueba temporal de conexión a la base de datos
-$app->get('/prueba-db', function (Request $request, Response $response, $args) {
-    $usuarios = User::all();
-    $response->getBody()->write($usuarios->toJson());
-    return $response->withHeader('Content-Type', 'application/json');
-});
+$auth_endpoints($app);
 
 $app->run();
