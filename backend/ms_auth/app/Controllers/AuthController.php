@@ -40,4 +40,33 @@ class AuthController
         }
         return hash_equals($user->contrasena, $contrasena);
     }
+        // Busca el dueño del token y revisa que la sesión esté activa
+    function validar_token(string $token): User
+    {
+        $user = User::where('token', $token)->first();
+
+        if (empty($user)) {
+            throw new Exception("Token inválido", 401);
+        }
+
+        if (!$user->sesion_activa) {
+            throw new Exception("La sesión no está activa", 401);
+        }
+
+        if ($user->estado !== 'activo') {
+            throw new Exception("El usuario se encuentra inactivo", 403);
+        }
+
+        return $user;
+    }
+
+    // Invalida el token y cierra la sesión
+    function logout(User $user): User
+    {
+        $user->token = null;
+        $user->sesion_activa = false;
+        $user->save();
+
+        return $user;
+    }
 }

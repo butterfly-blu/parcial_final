@@ -36,6 +36,22 @@ class AuthRepository
         ], 200);
     }
 
+        function logout(Request $req, Response $resp, $args): Response
+    {
+        $controller = new AuthController();
+        $controller->logout($req->getAttribute('user'));
+
+        return $this->json($resp, ["message" => "Sesión cerrada correctamente"], 200);
+    }
+
+    function validar_sesion(Request $req, Response $resp, $args): Response
+    {
+        return $this->json($resp, [
+            "message" => "Sesión activa",
+            "usuario" => $req->getAttribute('user'),
+        ], 200);
+    }
+    
     private function json(Response $resp, array $data, int $status): Response
     {
         $resp->getBody()->write(json_encode($data, JSON_UNESCAPED_UNICODE));
